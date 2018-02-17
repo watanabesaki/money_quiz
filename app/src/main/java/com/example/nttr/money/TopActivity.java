@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nifty.cloud.mb.core.DoneCallback;
@@ -24,6 +25,8 @@ public class TopActivity extends Activity {
     TextView degreeTextView;
     TextView timeTextView;
     TextView walletTextView;
+    //お金の画像
+    ImageView moneyImage;
 
     //プリファレンスを代入するもの
     int total;
@@ -83,6 +86,20 @@ public class TopActivity extends Activity {
         //最小タイム
         timeTextView = (TextView) findViewById(R.id.time);
 
+
+        moneyImage = (ImageView) findViewById(R.id.moneyImage);
+
+        moneyImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TopActivity.this, ShopActivity.class);
+
+                //startActivityでIntentの内容を発行する
+                startActivity(intent);
+
+            }
+        });
+
         //遊び方
         Button ruleButton = (Button) findViewById(R.id.rule);
         ruleButton.setText("遊び方");
@@ -94,6 +111,16 @@ public class TopActivity extends Activity {
         //リセットボタン
         Button resetButton = (Button) findViewById(R.id.reset);
         resetButton.setText("リセット");
+
+        moneyImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ShopActivity.class);
+                //startActivityでIntentの内容を発行する
+                startActivity(intent);
+
+            }
+        });
 
 
         //フォント
@@ -177,9 +204,10 @@ public class TopActivity extends Activity {
 
         //startActivityでIntentの内容を発行する
         startActivity(intent);
-
-
     }
+
+
+
 
     //リセットボタン
     public void reset(View view) {
