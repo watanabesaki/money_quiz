@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 
+
 public class MainActivity extends Activity implements View.OnClickListener {
 
     //１変数の宣言
