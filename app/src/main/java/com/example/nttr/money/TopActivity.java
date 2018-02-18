@@ -11,11 +11,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nifty.cloud.mb.core.DoneCallback;
-import com.nifty.cloud.mb.core.NCMB;
-import com.nifty.cloud.mb.core.NCMBException;
-import com.nifty.cloud.mb.core.NCMBObject;
-
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -45,31 +40,31 @@ public class TopActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top);
 
-        //NCMBクラスのinitializeメソッドでAndroid SDKの初期化を行う
-        NCMB.initialize(this.getApplicationContext(),"2506244bcc15d1459f7d3d12c1c22fd461e0f773f6a78a0383f32d8e795370ce","0cdd41e363bff95dbdf00ca4bbd07453d0d022c57badb8f511e49dc59de77f6b");
-
-        // クラスのNCMBObjectを作成
-        NCMBObject obj = new NCMBObject("TestClass");
-
-        // オブジェクトの値を設定
-        obj.put("message", "Hello, NCMB!");
-
-        // データストアへの登録
-        obj.saveInBackground(new DoneCallback() {
-            @Override
-            public void done(NCMBException e) {
-                if(e != null){
-                    //保存に失敗した場合の処理
-                    Log.d("NCMB","失敗");
-
-                }else {
-                    //保存に成功した場合の処理
-                    Log.d("NCMB","成功");
-
-
-                }
-            }
-        });
+//        //NCMBクラスのinitializeメソッドでAndroid SDKの初期化を行う
+//        NCMB.initialize(this.getApplicationContext(),"2506244bcc15d1459f7d3d12c1c22fd461e0f773f6a78a0383f32d8e795370ce","0cdd41e363bff95dbdf00ca4bbd07453d0d022c57badb8f511e49dc59de77f6b");
+//
+//        // クラスのNCMBObjectを作成
+//        NCMBObject obj = new NCMBObject("TestClass");
+//
+//        // オブジェクトの値を設定
+//        obj.put("message", "Hello, NCMB!");
+//
+//        // データストアへの登録
+//        obj.saveInBackground(new DoneCallback() {
+//            @Override
+//            public void done(NCMBException e) {
+//                if(e != null){
+//                    //保存に失敗した場合の処理
+//                    Log.d("NCMB","失敗");
+//
+//                }else {
+//                    //保存に成功した場合の処理
+//                    Log.d("NCMB","成功");
+//
+//
+//                }
+//            }
+//        });
 
 
         //タイトル

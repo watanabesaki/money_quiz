@@ -2,8 +2,17 @@ package com.example.nttr.money;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
+
+import com.nifty.cloud.mb.core.FindCallback;
+import com.nifty.cloud.mb.core.NCMB;
+import com.nifty.cloud.mb.core.NCMBException;
+import com.nifty.cloud.mb.core.NCMBObject;
+import com.nifty.cloud.mb.core.NCMBQuery;
+
+import java.util.List;
 
 public class ShopActivity extends AppCompatActivity {
 
@@ -30,6 +39,38 @@ public class ShopActivity extends AppCompatActivity {
 
         //リストviewとアダプターの接続
         //mGridview.setAdapter(adapter);
+
+        //NCMBクラスのinitializeメソッドでAndroid SDKの初期化を行う
+        NCMB.initialize(this.getApplicationContext(),"2506244bcc15d1459f7d3d12c1c22fd461e0f773f6a78a0383f32d8e795370ce","0cdd41e363bff95dbdf00ca4bbd07453d0d022c57badb8f511e49dc59de77f6b");
+        // クラスのNCMBObject指定
+        final NCMBQuery<NCMBObject> query = new NCMBQuery<NCMBObject>("Shop");
+        //価格昇順で並び替え
+        query.addOrderByAscending("price");
+
+        query.findInBackground(new FindCallback() {
+            @Override
+            public void done(List list, NCMBException e) {
+                if (e != null){
+                    //エラー
+                    Log.d("NCMB","NCMB取得失敗");
+
+                }else{
+                    //成功
+                    Log.d("NCMB","NCMB取得成功");
+                    //Log.d("NCMB", String.valueOf(list.indexOf("name")));
+
+                    //値の取り出し方
+                    for (int i = 0 ;i < list.size() ; i++){
+                        NCMBObject object = (NCMBObject)list.get(i);
+                        Log.d("NCMB", object.getString("name"));
+                        Log.d("NCMB", object.getString("price"));
+
+                    }
+
+                }
+            }
+        });
+
 
     }
 
