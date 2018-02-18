@@ -12,6 +12,7 @@ import com.nifty.cloud.mb.core.NCMBException;
 import com.nifty.cloud.mb.core.NCMBObject;
 import com.nifty.cloud.mb.core.NCMBQuery;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShopActivity extends AppCompatActivity {
@@ -23,29 +24,26 @@ public class ShopActivity extends AppCompatActivity {
 
         //Button backButton = (Button) findViewById(R.id.toTop2);
 
-        //String[] list = {"牡羊座","乙女座","射手座"};
+        //arraylist
+        final ArrayList nameList = new ArrayList();
 
-        // GridViewのインスタンス生成
-        GridView mGridview = (GridView) findViewById(R.id.gridview);
-
-//        GridView adapter = new GridAdapter(this.getApplicationContext(),
-//                //R.layout.grid_items,
-//                //imgList, //Data Source
-//                //members // Data Source
-//        );
-
-        //ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), R.layout.cell_layout,list);
-        mGridview.setAdapter(new GridAdapter());
-
-        //リストviewとアダプターの接続
-        //mGridview.setAdapter(adapter);
 
         //NCMBクラスのinitializeメソッドでAndroid SDKの初期化を行う
         NCMB.initialize(this.getApplicationContext(),"2506244bcc15d1459f7d3d12c1c22fd461e0f773f6a78a0383f32d8e795370ce","0cdd41e363bff95dbdf00ca4bbd07453d0d022c57badb8f511e49dc59de77f6b");
+
+//        NCMBObject obj =new NCMBObject("shop");
+//        try {
+//            obj.fetch();
+//        } catch (NCMBException e) {
+//            e.printStackTrace();
+//        }
+
         // クラスのNCMBObject指定
         final NCMBQuery<NCMBObject> query = new NCMBQuery<NCMBObject>("Shop");
         //価格昇順で並び替え
         query.addOrderByAscending("price");
+
+
 
         query.findInBackground(new FindCallback() {
             @Override
@@ -62,14 +60,29 @@ public class ShopActivity extends AppCompatActivity {
                     //値の取り出し方
                     for (int i = 0 ;i < list.size() ; i++){
                         NCMBObject object = (NCMBObject)list.get(i);
-                        Log.d("NCMB", object.getString("name"));
+                        //Log.d("NCMB", object.getString("name"));
                         Log.d("NCMB", object.getString("price"));
+                        nameList.add(object.getString("name"));
+                        Log.d("NCMB", String.valueOf(nameList));
 
                     }
 
                 }
             }
         });
+
+        // GridViewのインスタンス生成
+        GridView mGridview = (GridView) findViewById(R.id.gridview);
+        // BaseAdapter を継承したGridAdapterのインスタンスを生成
+        // 子要素のレイアウトファイル cell_layout.xml を
+        // activity_shop.xml に inflate するためにGridAdapterに引数として渡す
+        GridAdapter adapter = new GridAdapter(this.getApplicationContext(),R.layout.cell_layout,nameList);
+        Log.d("NCMB", String.valueOf(nameList));
+
+        //アダプターの設定
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.cell_layout,nameList);
+        //リストviewとアダプターの接続
+        mGridview.setAdapter(adapter);
 
 
     }
