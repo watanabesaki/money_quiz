@@ -1,7 +1,6 @@
 package com.example.nttr.money;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,7 +101,7 @@ public class GridAdapter extends BaseAdapter {
 
         holder.name.setText(nameListAdapter.get(position));
         holder.price.setText(priceListAdapter.get(position));
-        Log.d("grid", String.valueOf(nameListAdapter));
+        //Log.d("grid", String.valueOf(nameListAdapter));
 
 
         //表示する
