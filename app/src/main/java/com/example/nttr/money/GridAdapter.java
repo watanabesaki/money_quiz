@@ -24,15 +24,19 @@ public class GridAdapter extends BaseAdapter {
     }
 
     private ArrayList<String> nameListAdapter = new ArrayList<String>();
-    //private LayoutInflater inflater;
+    private ArrayList<String> priceListAdapter = new ArrayList<String>();
+
+    private LayoutInflater inflater;
     //private int layoutID;
 
     // 引数がMainActivityからの設定と合わせる
-    GridAdapter(Context context, int layoutID, ArrayList<String> nameList) {
+    GridAdapter(Context context, int layoutID, ArrayList<String> nameList,ArrayList<String> priceList) {
         super();
-        //this.inflater =(LayoutInflater)context.getSystemService(Context,LAYOUT_INFLATER_SERVICE);
+        //this.inflater =(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         //this.layoutID = layoutID;
+        inflater = LayoutInflater.from(context);
         nameListAdapter = nameList;
+        priceListAdapter = priceList;
 
     }
 
@@ -52,12 +56,21 @@ public class GridAdapter extends BaseAdapter {
     public int getCount() {
 
         return nameListAdapter.size();
+
     }
 
     @Override
     public Object getItem(int position) {
 
         return nameListAdapter.get(position);
+
+    }
+
+    public void setItem(ArrayList<String> nameListAdapter,ArrayList<String> priceListAdapter) {
+        this.nameListAdapter = nameListAdapter;
+        this.priceListAdapter = priceListAdapter;
+        // データを更新する
+        notifyDataSetChanged();
     }
 
     //番目
@@ -74,10 +87,12 @@ public class GridAdapter extends BaseAdapter {
 
         ViewHolder holder;
         if (convertView == null){
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_layout,parent,false);
+            //convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_layout,parent,false);
+            //convertView = inflater.inflate(layoutID,parent,false);
+            convertView = inflater.inflate(R.layout.cell_layout,null);
             holder = new ViewHolder();
             holder.name = (TextView) convertView.findViewById(R.id.name);
-            //holder.price = (TextView) convertView.findViewById(R.id.price);
+            holder.price = (TextView) convertView.findViewById(R.id.price);
             convertView.setTag(holder);
 
         }else{
@@ -86,8 +101,9 @@ public class GridAdapter extends BaseAdapter {
         }
 
         holder.name.setText(nameListAdapter.get(position));
+        holder.price.setText(priceListAdapter.get(position));
         Log.d("grid", String.valueOf(nameListAdapter));
-        //holder.price.setText(priceList[position]);
+
 
         //表示する
         return convertView;

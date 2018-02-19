@@ -110,7 +110,8 @@ public class TopActivity extends Activity {
         moneyImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), ShopActivity.class);
+                //Intent intent = new Intent(getApplicationContext(), ShopActivity.class);
+                Intent intent = new Intent(TopActivity.this, ShopActivity.class);
                 //startActivityでIntentの内容を発行する
                 startActivity(intent);
 
