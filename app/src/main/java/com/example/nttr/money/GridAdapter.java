@@ -5,14 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 /**
  * Created by nttr on 2018/02/17.
  */
-
 // BaseAdapterを継承したGridAdapterクラス
 public class GridAdapter extends BaseAdapter {
 
@@ -20,23 +22,21 @@ public class GridAdapter extends BaseAdapter {
     private static class  ViewHolder {
         TextView name;
         TextView price;
+        ImageView shopImage;
     }
 
-    private ArrayList<String> nameListAdapter = new ArrayList<String>();
-    private ArrayList<String> priceListAdapter = new ArrayList<String>();
+    private ArrayList<PaymentHistory> paymentHistoryList = new ArrayList<PaymentHistory>();
 
     private LayoutInflater inflater;
     //private int layoutID;
 
     // 引数がMainActivityからの設定と合わせる
-    GridAdapter(Context context, int layoutID, ArrayList<String> nameList,ArrayList<String> priceList) {
+    GridAdapter(Context context, ArrayList<PaymentHistory> paymentHistoryList) {
         super();
         //this.inflater =(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         //this.layoutID = layoutID;
         inflater = LayoutInflater.from(context);
-        nameListAdapter = nameList;
-        priceListAdapter = priceList;
-
+        this.paymentHistoryList = paymentHistoryList;
     }
 
 
@@ -54,20 +54,19 @@ public class GridAdapter extends BaseAdapter {
     @Override
     public int getCount() {
 
-        return nameListAdapter.size();
+        return paymentHistoryList.size();
 
     }
 
     @Override
     public Object getItem(int position) {
 
-        return nameListAdapter.get(position);
+        return paymentHistoryList.get(position);
 
     }
 
-    public void setItem(ArrayList<String> nameListAdapter,ArrayList<String> priceListAdapter) {
-        this.nameListAdapter = nameListAdapter;
-        this.priceListAdapter = priceListAdapter;
+    public void setItem(ArrayList<PaymentHistory> paymentHistoryList) {
+        this.paymentHistoryList = paymentHistoryList;
         // データを更新する
         notifyDataSetChanged();
     }
@@ -92,16 +91,23 @@ public class GridAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.name = (TextView) convertView.findViewById(R.id.name);
             holder.price = (TextView) convertView.findViewById(R.id.price);
-            convertView.setTag(holder);
+            holder.shopImage = (ImageView) convertView.findViewById(R.id.shopimage);
 
+            convertView.setTag(holder);
         }else{
             //viewholderから取り出す。（効率的にセルを表示する）
             holder =(ViewHolder)convertView.getTag();
         }
+        PaymentHistory item = paymentHistoryList.get(position);
 
-        holder.name.setText(nameListAdapter.get(position));
-        holder.price.setText(priceListAdapter.get(position));
-        //Log.d("grid", String.valueOf(nameListAdapter));
+        holder.name.setText(item.name);
+        holder.price.setText(item.price + "円");
+        Picasso.with(holder.shopImage.getContext())
+                .load(item.getImageUrl())
+                .error(R.drawable.bag)
+//                .placeholder(R.drawable.bag)
+                .into(holder.shopImage);
+        //Log.d("grid", String.valueOf(paymentHistoryList));
 
 
         //表示する

@@ -22,9 +22,7 @@ import java.util.List;
 
 public class ShopActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-    final ArrayList nameList = new ArrayList();
-    final ArrayList priceList = new ArrayList();
-
+    final ArrayList<PaymentHistory> paymentHistoryArrayList = new ArrayList<>();
     int total;
 
 
@@ -36,7 +34,6 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
         //Button backButton = (Button) findViewById(R.id.toTop2);
 
 
-
         // GridViewのインスタンス生成
         GridView mGridview = (GridView) findViewById(R.id.gridview);//setContentView にListViewのインスタンスを設定
         mGridview.setNumColumns(3);
@@ -45,10 +42,10 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
         // BaseAdapter を継承したGridAdapterのインスタンスを生成
         // 子要素のレイアウトファイル cell_layout.xml を
         // activity_shop.xml に inflate するためにGridAdapterに引数として渡す
-        final GridAdapter adapter = new GridAdapter(this.getApplicationContext(), R.layout.cell_layout, new ArrayList(),new ArrayList());
+        final GridAdapter adapter = new GridAdapter(this.getApplicationContext(), new ArrayList<PaymentHistory>());
 
         //アダプターの設定
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.cell_layout,nameList);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.cell_layout,paymentHistoryArrayList);
         //リストviewとアダプターの接続
         mGridview.setAdapter(adapter);
 
@@ -67,16 +64,15 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
         //価格昇順で並び替え
         query.addOrderByAscending("price");
 
-
         query.findInBackground(new FindCallback() {
             @Override
             public void done(List list, NCMBException e) {
                 if (e != null) {
                     //エラー
-                    Log.d("NCMB", "NCMB取得失敗");
+                    //Log.d("NCMB", "NCMB取得失敗");
                 } else {
                     //成功
-                    Log.d("NCMB", "NCMB取得成功");
+                    //Log.d("NCMB", "NCMB取得成功");
                     //Log.d("NCMB", String.valueOf(list.indexOf("name")));
 
                     //値の取り出し方
@@ -84,19 +80,75 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
                         NCMBObject object = (NCMBObject) list.get(i);
                         //Log.d("NCMB", object.getString("name"));
                         //Log.d("NCMB", object.getString("price"));
-                        nameList.add(object.getString("name"));
-                        priceList.add(object.getString("price"));
-                        //Log.d("NCMB", String.valueOf(nameList));
+                        final PaymentHistory paymentHistory = new PaymentHistory();
+                        paymentHistory.name = object.getString("name");
+                        paymentHistory.price = Integer.valueOf(object.getString("price"));
+                        paymentHistory.imageName = object.getString("imageName");
+                        paymentHistoryArrayList.add(paymentHistory);
+                        //ファイルから画像の取得
+                        /*NCMBFile file = new NCMBFile(object.getString("imageName"));
+                        file.fetchInBackground(
+                                new FetchFileCallback() {
+                                    @Override
+                                    public void done(byte[] bytes, NCMBException e) {
+                                        if (e != null) {
+                                            //取得失敗
+                                            Log.d("NCMB", "画像取得失敗");
+                                            paymentHistory.imageBody = null;
+                                            paymentHistoryArrayList.add(paymentHistory);
+                                        } else {
+                                            //取得成功
+                                            Log.d("NCMB", "画像取得成功");
+                                            Log.d("NCMB", String.valueOf(bytes));
+                                            paymentHistory.imageBody = bytes;
+
+                                        }
+
+                                    }
+                                }
+                        );*/
                     }
-                    adapter.setItem(nameList,priceList);
-
-
+                    adapter.setItem(paymentHistoryArrayList);
                 }
             }
         });
 
+
         //タップされた事を認識するために、リスナーを設定します
         mGridview.setOnItemClickListener((AdapterView.OnItemClickListener) this);
+
+//        //ファイルから画像の取得
+//        NCMBQuery<NCMBFile> file = new NCMBQuery<>("file");
+//        file.whereEqualTo("fileName",imageName);
+//        file.findInBackground(new FindCallback<NCMBFile>() {
+//            @Override
+//            public void done(final List<NCMBFile> list, NCMBException e) {
+//                if(e !=null){
+//                    //画像検索失敗
+//                    Log.d("NCMB", "画像検索失敗");
+//                }else{
+//                    //画像検索成功
+//                    for (int i = 0; i < list.size(); i++) {
+//                        list.get(i).fetchInBackground(new FetchFileCallback() {
+//                            @Override
+//                            public void done(byte[] bytes, NCMBException e) {
+//                                if(e != null){
+//                                    //取得失敗
+//                                    Log.d("NCMB", "画像取得失敗");
+//
+//                                }else{
+//                                    //取得成功
+//                                    Log.d("NCMB", "画像取得成功");
+//                                    Log.d("NCMB", String.valueOf(bytes));
+//                                }
+//                            }
+//                        });
+//
+//                    }
+//
+//                }
+//            }
+//        });
 
     }
 
@@ -111,27 +163,26 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
         //// clickされたpositionのitemのID,商品名を取得
-        String selectedItem = (String) nameList.get(position);
-        final int selectedprice = Integer.parseInt((String) priceList.get(position));
+        final PaymentHistory selectedItem = (PaymentHistory) paymentHistoryArrayList.get(position);
 
-        Log.d("grid", selectedItem);
-        Log.d("grid", String.valueOf(selectedprice));
+        Log.d("grid", selectedItem.name);
+        Log.d("grid", String.valueOf(selectedItem.price));
 
         //プリファレンスの読み込み
         SharedPreferences prefer = getSharedPreferences("prefarences", MODE_PRIVATE);
         total = prefer.getInt("total", 0);
         Log.d("grid", String.valueOf(total));
 
-        if(total < selectedprice){
-            Log.d("grid", "お金が足りません");
-            Toast.makeText(ShopActivity.this,"お金が足りません",Toast.LENGTH_SHORT).show();
+        if (total < selectedItem.price) {
+            //Log.d("grid", "お金が足りません");
+            Toast.makeText(ShopActivity.this, "お金が足りません", Toast.LENGTH_SHORT).show();
 
-        }else{
+        } else {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this,R.style.MyAlertDialogStyle);
-            builder.setTitle("貯金額は" + total + "です。");
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
+            builder.setTitle("貯金額は" + total + "円です。");
             builder.setIcon(R.drawable.money);
-            builder.setMessage( selectedItem + "は" + String.valueOf(selectedprice) + "円です。買いますか？");
+            builder.setMessage(selectedItem + "は" + String.valueOf(selectedItem.price) + "円です。買いますか？");
 
 
             //OKボタン
@@ -149,15 +200,15 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
                     //買い物する
 //                    Log.d("grid", "買い物しましょう");
 
-                    total = total - selectedprice;
+                    total = total - selectedItem.price;
                     Log.d("grid", String.valueOf(total));
 
                     //プリファレンスへアクセス
-                    SharedPreferences prefer = getSharedPreferences("prefarences",MODE_PRIVATE);
+                    SharedPreferences prefer = getSharedPreferences("prefarences", MODE_PRIVATE);
                     //プリファレンスへ保存する
                     SharedPreferences.Editor editor = prefer.edit();
                     //キー　値
-                    editor.putInt("total",total);
+                    editor.putInt("total", total);
 
                     //同期して保存
                     editor.commit();
@@ -169,9 +220,40 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
 
-
-
-
-
     }
 }
+
+
+    /*NCMBQuery<NCMBFile> file = new NCMBQuery<>("file");
+                        file.whereEqualTo("fileName", imageList.get(i));
+                                Log.d("NCMB", String.valueOf(imageList.get(i)));
+
+                                file.findInBackground(new FindCallback<NCMBFile>() {
+@Override
+public void done(final List<NCMBFile> list, NCMBException e) {
+        if (e != null) {
+        //画像検索失敗
+        Log.d("NCMB", "画像検索失敗");
+        } else {
+        //画像検索成功
+        for (int i = 0; i < list.size(); i++) {
+        list.get(i).fetchInBackground(new FetchFileCallback() {
+@Override
+public void done(byte[] bytes, NCMBException e) {
+        if (e != null) {
+        //取得失敗
+        Log.d("NCMB", "画像取得失敗");
+
+        } else {
+        //取得成功
+        Log.d("NCMB", "画像取得成功");
+        Log.d("NCMB", String.valueOf(bytes));
+        }
+        }
+        });
+
+        }
+
+        }
+        }
+        });*/
