@@ -102,6 +102,10 @@ public class GridAdapter extends BaseAdapter {
 
         holder.name.setText(item.name);
         holder.price.setText(item.price + "円");
+
+
+
+
         Picasso.with(holder.shopImage.getContext())
                 .load(item.getImageUrl())
                 .error(R.drawable.bag)

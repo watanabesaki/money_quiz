@@ -1,16 +1,22 @@
 package com.example.nttr.money;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.nifty.cloud.mb.core.FindCallback;
 import com.nifty.cloud.mb.core.NCMB;
 import com.nifty.cloud.mb.core.NCMBException;
@@ -25,13 +31,19 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
     final ArrayList<PaymentHistory> paymentHistoryArrayList = new ArrayList<>();
     int total;
 
+    ArrayList<String> arrayItem = new ArrayList<String>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
 
-        //Button backButton = (Button) findViewById(R.id.toTop2);
+        Button backButton = (Button) findViewById(R.id.toTop2);
+        TextView shopText = (TextView) findViewById(R.id.shopText);
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "HolidayMDJP.otf");
+        backButton.setTypeface(typeface);
+        shopText.setTypeface(typeface);
 
 
         // GridViewのインスタンス生成
@@ -63,6 +75,8 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
         final NCMBQuery<NCMBObject> query = new NCMBQuery<NCMBObject>("Shop");
         //価格昇順で並び替え
         query.addOrderByAscending("price");
+        Log.d("query", String.valueOf(query));
+
 
         query.findInBackground(new FindCallback() {
             @Override
@@ -77,6 +91,7 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
 
                     //値の取り出し方
                     for (int i = 0; i < list.size(); i++) {
+
                         NCMBObject object = (NCMBObject) list.get(i);
                         //Log.d("NCMB", object.getString("name"));
                         //Log.d("NCMB", object.getString("price"));
@@ -182,7 +197,7 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
             builder.setTitle("貯金額は" + total + "円です。");
             builder.setIcon(R.drawable.money);
-            builder.setMessage(selectedItem + "は" + String.valueOf(selectedItem.price) + "円です。買いますか？");
+            builder.setMessage(selectedItem.name + "は" + String.valueOf(selectedItem.price) + "円です。買いますか？");
 
 
             //OKボタン
@@ -213,6 +228,24 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
                     //同期して保存
                     editor.commit();
 
+                    //プレファレンスにアイテム名を保存
+                    arrayItem.add(selectedItem.name);
+
+                    //GsonがオブジェクトをJSONに変換して、それをString型としてSharedPreferencesに保存します
+                    Gson gson = new Gson();
+                    SharedPreferences sharedPreferences = getSharedPreferences("item", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editorItem = sharedPreferences.edit();
+                    editorItem.putString("itemName", gson.toJson(arrayItem));
+                    editorItem.apply();
+
+                    //取得
+                    Gson gson1 = new Gson();
+                    SharedPreferences sharedPreferences1 = getSharedPreferences("item", Context.MODE_PRIVATE);
+                    List itemNameList = gson1.fromJson(sharedPreferences1.getString("itemName", null), new TypeToken<List>() {
+                    }.getType());
+                    Log.d("gson", String.valueOf(itemNameList));
+
+
                 }
             });
 
@@ -222,38 +255,3 @@ public class ShopActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 }
-
-
-    /*NCMBQuery<NCMBFile> file = new NCMBQuery<>("file");
-                        file.whereEqualTo("fileName", imageList.get(i));
-                                Log.d("NCMB", String.valueOf(imageList.get(i)));
-
-                                file.findInBackground(new FindCallback<NCMBFile>() {
-@Override
-public void done(final List<NCMBFile> list, NCMBException e) {
-        if (e != null) {
-        //画像検索失敗
-        Log.d("NCMB", "画像検索失敗");
-        } else {
-        //画像検索成功
-        for (int i = 0; i < list.size(); i++) {
-        list.get(i).fetchInBackground(new FetchFileCallback() {
-@Override
-public void done(byte[] bytes, NCMBException e) {
-        if (e != null) {
-        //取得失敗
-        Log.d("NCMB", "画像取得失敗");
-
-        } else {
-        //取得成功
-        Log.d("NCMB", "画像取得成功");
-        Log.d("NCMB", String.valueOf(bytes));
-        }
-        }
-        });
-
-        }
-
-        }
-        }
-        });*/
